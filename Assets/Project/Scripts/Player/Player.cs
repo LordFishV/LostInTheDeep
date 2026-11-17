@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
             Move        = _input.Move.ReadValue<Vector2>(),
             MoveInput   = _input.MoveInput.IsPressed(),
             Sprint      = _input.Sprint.IsPressed(),
-            Crouch      = _input.Crouch.WasPressedThisFrame(),
+            Crouch      = _input.Crouch.IsPressed(),
             Interact    = _input.Interact.WasPressedThisFrame()
         };
 

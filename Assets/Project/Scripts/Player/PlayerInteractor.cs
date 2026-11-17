@@ -5,8 +5,8 @@ public class PlayerInteractor : MonoBehaviour
     [SerializeField] private LayerMask _interactionMask;
     [SerializeField] private float _interactRange = 2f;
     [SerializeField, Range(-1f, 1f)] private float _minimumFacingAlignment = 0.5f; // 0.5 is roughly 60 degrees either side
-    [SerializeField] private PlayerScrap _scrap;
-    public PlayerScrap Scrap => _scrap;
+    [SerializeField] private PlayerWallet _wallet;
+    public PlayerWallet Wallet => _wallet;
     private readonly Collider[] _nearbyColliders = new Collider[16];
 
     public void UpdateInteractor(PlayerInputs inputs) {

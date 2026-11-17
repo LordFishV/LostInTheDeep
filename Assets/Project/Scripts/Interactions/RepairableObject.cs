@@ -1,24 +1,31 @@
+using UnityEngine;
+
 public abstract class RepairableObject<TData> : InteractableObject<TData>
     where TData : RepairableInteractableSO
 {
     protected bool _isBroken;
 
-    protected virtual void Awake() => _isBroken = _data.StartsBroken;
+    protected override void Awake() {
+        _isBroken = _data.StartsBroken; // must be set before the base call spawns visuals
+        base.Awake();
+    }
 
-    // Returns true if the object is working (already, or after paying).
-    protected bool EnsureRepaired(PlayerInteractor interactor)
-    {
+    protected override GameObject GetVisualPrefab() =>
+        _isBroken && _data.WorldPrefabDamaged != null
+            ? _data.WorldPrefabDamaged
+            : _data.WorldPrefab;
+
+    protected bool EnsureRepaired(PlayerInteractor interactor) {
         if (!_isBroken) return true;
 
-        if (interactor.Scrap.TrySpendScrap(_data.RepairCostInScrap))
-        {
+        if (interactor.Wallet.TrySpendScrap(_data.RepairCostInScrap, _data.UseAudioClip)) {
             _isBroken = false;
+            RefreshVisuals(); // swap damaged for repaired
             Debug.Log($"Repaired {_data.DisplayName}.");
         }
-        else
-        {
+        else {
             Debug.Log($"Need {_data.RepairCostInScrap} scrap to repair {_data.DisplayName}.");
         }
-        return false; // the repair itself uses the interaction
+        return false; // the repair used up this interaction
     }
 }

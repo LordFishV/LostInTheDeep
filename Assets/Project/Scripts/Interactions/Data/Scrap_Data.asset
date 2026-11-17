@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PickUpSO
   _displayName: Scrap
   _promptText: Interact
-  _worldPrefab: {fileID: 0}
+  _worldPrefab: {fileID: 2215336064304382887, guid: 7e48d832d9511f3418da92b10ddec045, type: 3}
+  _useAudioClip: {fileID: 8300000, guid: 892917bb06b57184bb1ffd4122ade043, type: 3}
   _icon: {fileID: 0}
   _amount: 1
   _isScrap: 1

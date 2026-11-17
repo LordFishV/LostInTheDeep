@@ -4,9 +4,13 @@ public abstract class InteractableSO : ScriptableObject
 {
     [SerializeField] private string _displayName;
     [SerializeField] private string _promptText = "Interact";
+    [SerializeField] private GameObject _worldPrefab;
+    [SerializeField] private AudioClip _useAudioClip;
 
     public string DisplayName => _displayName;
     public string PromptText => _promptText;
+    public GameObject WorldPrefab => _worldPrefab;
+    public AudioClip UseAudioClip => _useAudioClip;
 }
 
 public abstract class RepairableInteractableSO : InteractableSO
@@ -14,23 +18,27 @@ public abstract class RepairableInteractableSO : InteractableSO
     [Header("Repair")]
     [SerializeField] private bool _startsBroken;
     [SerializeField, Min(0)] private int _repairCostInScrap = 5;
+    [SerializeField] private GameObject _worldPrefabDamaged;
 
     public bool StartsBroken => _startsBroken;
     public int RepairCostInScrap => _repairCostInScrap;
+    public GameObject WorldPrefabDamaged => _worldPrefabDamaged;
 }
 
 [CreateAssetMenu(menuName = "Interactables/Pick Up", fileName = "New Pick Up")]
 public class PickUpSO : InteractableSO
 {
-    [SerializeField] private GameObject _worldPrefab;
     [SerializeField] private Sprite _icon;
     [SerializeField, Min(1)] private int _amount = 1;
     [SerializeField] private bool _isScrap; // scrap goes to the currency wallet, everything else to inventory
+    
 
-    public GameObject WorldPrefab => _worldPrefab;
     public Sprite Icon => _icon;
     public int Amount => _amount;
     public bool IsScrap => _isScrap;
+    
+
+
 }
 
 [CreateAssetMenu(menuName = "Interactables/Door", fileName = "New Door")]
