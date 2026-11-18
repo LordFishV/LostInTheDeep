@@ -31,24 +31,19 @@ public class PickUpSO : InteractableSO
     [SerializeField] private Sprite _icon;
     [SerializeField, Min(1)] private int _amount = 1;
     [SerializeField] private bool _isScrap; // scrap goes to the currency wallet, everything else to inventory
-    
+
 
     public Sprite Icon => _icon;
     public int Amount => _amount;
     public bool IsScrap => _isScrap;
-    
-
-
 }
 
 [CreateAssetMenu(menuName = "Interactables/Door", fileName = "New Door")]
 public class DoorSO : RepairableInteractableSO
 {
     [SerializeField] private bool _startsOpen;
-    [SerializeField] private float _openDuration = 0.5f;
 
     public bool StartsOpen => _startsOpen;
-    public float OpenDuration => _openDuration;
 }
 
 [CreateAssetMenu(menuName = "Interactables/Computer", fileName = "New Computer")]

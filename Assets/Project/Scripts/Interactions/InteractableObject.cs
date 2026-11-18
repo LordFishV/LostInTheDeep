@@ -6,6 +6,9 @@ public abstract class InteractableObject<TData> : MonoBehaviour, IInteractable
     [SerializeField] protected TData _data;
     [SerializeField] private Transform _visualRoot; // falls back to this transform
     [SerializeField] private GameObject _placeholder;
+    [SerializeField] private float _openDuration;
+    [SerializeField] private Vector3 _slideOffset;
+    [SerializeField] private bool _isSlidingDoor;
 
     private GameObject _visualInstance;
 
@@ -23,6 +26,9 @@ public abstract class InteractableObject<TData> : MonoBehaviour, IInteractable
     protected virtual void Awake() => RefreshVisuals();
 
     protected virtual GameObject GetVisualPrefab() => _data.WorldPrefab;
+    protected float OpenDuration => _openDuration;
+    protected Vector3 SlideOffset => _slideOffset;
+    protected bool IsSlidingDoor => _isSlidingDoor;
 
     protected void RefreshVisuals() {
         if (_visualInstance != null)
