@@ -6,29 +6,20 @@ public abstract class InteractableObject<TData> : MonoBehaviour, IInteractable
     [SerializeField] protected TData _data;
     [SerializeField] private Transform _visualRoot; // falls back to this transform
     [SerializeField] private GameObject _placeholder;
-    [SerializeField] private float _openDuration;
-    [SerializeField] private Vector3 _slideOffset;
-    [SerializeField] private bool _isSlidingDoor;
 
     private GameObject _visualInstance;
 
     public string PromptText => _data.PromptText;
+
+    // IInteractable Functions
     public abstract void Interact(PlayerInteractor interactor);
+    public abstract void OnMouseHoverEnter();
+    public abstract void OnMouseHoverExit();
 
-    public void OnMouseHoverEnter() {
-        throw new System.NotImplementedException();
-    }
-
-    public void OnMouseHoverExit() {
-        throw new System.NotImplementedException();
-    }
 
     protected virtual void Awake() => RefreshVisuals();
 
     protected virtual GameObject GetVisualPrefab() => _data.WorldPrefab;
-    protected float OpenDuration => _openDuration;
-    protected Vector3 SlideOffset => _slideOffset;
-    protected bool IsSlidingDoor => _isSlidingDoor;
 
     protected void RefreshVisuals() {
         if (_visualInstance != null)
@@ -41,5 +32,10 @@ public abstract class InteractableObject<TData> : MonoBehaviour, IInteractable
 
         Transform parent = _visualRoot != null ? _visualRoot : transform;
         _visualInstance = Instantiate(prefab, parent); // keeps the prefab's local position and rotation
+    }
+
+    protected void PlayUseSound() {
+        if (_data.InteractAudioClip != null)
+            AudioSource.PlayClipAtPoint(_data.InteractAudioClip, transform.position);
     }
 }

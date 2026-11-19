@@ -9,6 +9,10 @@ public class PlayerInteractor : MonoBehaviour
     public PlayerWallet Wallet => _wallet;
     private readonly Collider[] _nearbyColliders = new Collider[16];
 
+    public IChargeable Gear { get; private set; }
+
+    private void Awake() => Gear = GetComponentInParent<IChargeable>();
+
     public void UpdateInteractor(PlayerInputs inputs) {
         if (inputs.Interact)
             CallInteraction();

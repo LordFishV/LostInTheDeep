@@ -9,18 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: f512068cecbf00d438ccc666b0dfe068, type: 3}
   m_Name: Door_Data
   m_EditorClassIdentifier: Assembly-CSharp::DoorSO
-  _displayName: 
+  _displayName: Door
   _promptText: Interact
-  _worldPrefab: {fileID: 0}
-  _useAudioClip: {fileID: 0}
-  _startsBroken: 0
-  _repairCostInScrap: 5
-  _worldPrefabDamaged: {fileID: 0}
-  _startsOpen: 0
-  _isSlidingDoor: 0
+  _worldPrefab: {fileID: 533326711360743180, guid: c63e942ce9c39ea4baf1a6942c704a12, type: 3}
+  _useAudioClip: {fileID: 8300000, guid: 892917bb06b57184bb1ffd4122ade043, type: 3}
+  _worldPrefabDamaged: {fileID: 533326711360743180, guid: e64cef672fcc76b449528461d0d4a593, type: 3}
+  _repairAudioClip: {fileID: 8300000, guid: 892917bb06b57184bb1ffd4122ade043, type: 3}
   _openDuration: 0.5
-  _rotationSpeed: 0.5
-  _slideOffset: {x: 0, y: 10, z: 0}
+  _openAngle: 90

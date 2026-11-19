@@ -3,72 +3,78 @@ using UnityEngine;
 
 public class Door : RepairableObject<DoorSO>
 {
+    private enum DoorStyle { Rotating, Sliding }
+
+    [SerializeField] private DoorStyle _style = DoorStyle.Rotating;
+    [SerializeField] private bool _startsOpen;
+    [SerializeField] private Vector3 _slideOffset = new Vector3(0f, 0f, 1.5f); // sliding only
+    [SerializeField] private Override<float> _openDuration;
+    [SerializeField] private Override<float> _openAngle;                       // rotating only
+    [SerializeField] private Transform _root;
+
     private bool _isOpen;
-    private float _currentAngle;
-    private Coroutine _animationCoroutine;
     private Vector3 _closedPosition;
+    private Quaternion _closedRotation;
+    private Coroutine _animation;
+
+    private float OpenDuration => _openDuration.Resolve(_data.OpenDuration);
+    private float OpenAngle => _openAngle.Resolve(_data.OpenAngle);
 
     protected override void Awake() {
         base.Awake();
-        _currentAngle = transform.rotation.y;
-        _isOpen = _data.StartsOpen;
+
+        _closedPosition = _root.localPosition;
+        _closedRotation = _root.localRotation;
+
+        _isOpen = _startsOpen;
+        if (_isOpen) Apply(1f);
     }
 
-    public override void Interact(PlayerInteractor interactor)
-    {
+    public override void Interact(PlayerInteractor interactor) {
         if (!EnsureRepaired(interactor)) return;
 
         _isOpen = !_isOpen;
-
-        // Stop any currently running door animation before starting the new one
-        if (_animationCoroutine != null) {
-            StopCoroutine(_animationCoroutine);
-        }
-
-        _animationCoroutine = StartCoroutine(AnimateDoor(_isOpen));
+        if (_animation != null) StopCoroutine(_animation);
+        _animation = StartCoroutine(Animate(_isOpen ? 1f : 0f));
     }
-    private IEnumerator AnimateDoor(bool open) {
+    public override void OnMouseHoverEnter() {
+
+    }
+    public override void OnMouseHoverExit() {
+
+    }
+
+    private IEnumerator Animate(float target) {
+        float start = _currentBlend;
         float elapsed = 0f;
-        float duration = OpenDuration;
 
-        if (IsSlidingDoor) { // If dor is a sliding door
-            Vector3 startPosition = transform.localPosition;
-            Vector3 targetPosition = open ? _closedPosition + SlideOffset : _closedPosition;
-
-            // While time played is less then duration 
-            while (elapsed < duration) {
-                float timeStep = TimeStep(elapsed, duration);
-
-                transform.localPosition = Vector3.Lerp(startPosition, targetPosition, timeStep);
-                yield return null; // Wait until the next frame
-            }
-
-            transform.localPosition = targetPosition;
-        }
-        else { // If door is a rotating door.
-            float startAngle = _currentAngle;
-            float targetAngle = open ? 90f : 0f;
-
-            while (elapsed < duration) {
-                float timeStep = TimeStep(elapsed, duration);
-
-                _currentAngle = Mathf.LerpAngle(startAngle, targetAngle, timeStep);
-                transform.localRotation = Quaternion.Euler(0f, _currentAngle, 0f);
-                yield return null; // Wait until the next frame
-            }
-
-            _currentAngle = targetAngle;
-            transform.localRotation = Quaternion.Euler(0f, _currentAngle, 0f);
+        while (elapsed < OpenDuration) {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / OpenDuration));
+            Apply(Mathf.Lerp(start, target, t));
+            yield return null;
         }
 
-        _animationCoroutine = null;
+        Apply(target);
+        _animation = null;
     }
 
-    private float TimeStep(float elapsed, float duration) {
-        elapsed += Time.deltaTime;
-        float timeStep = Mathf.Clamp01(elapsed / duration);
-        // SmoothStep adds a nice ease-in and ease-out feel
-        timeStep = Mathf.SmoothStep(0f, 1f, timeStep);
-        return timeStep;
+    private float _currentBlend; // 0 = closed, 1 = open
+
+    /// <summary>Apply rotation or position depending on the type of door</summary>
+    /// <param name="blend">A 0 to 1 blend that from from one value to the other</param>
+    private void Apply(float blend) {
+        _currentBlend = blend;
+
+        if (_style == DoorStyle.Sliding)
+            _root.localPosition = _closedPosition + _slideOffset * blend;
+        else
+            _root.localRotation = _closedRotation * Quaternion.Euler(0f, OpenAngle * blend, 0f);
+    }
+
+    private void OnDrawGizmosSelected() {
+        if (_style != DoorStyle.Sliding) return;
+        Vector3 from = _root.position;
+        Gizmos.DrawLine(from, from + _root.parent.TransformVector(_slideOffset));
     }
 }

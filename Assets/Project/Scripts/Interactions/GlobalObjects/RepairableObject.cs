@@ -3,10 +3,13 @@ using UnityEngine;
 public abstract class RepairableObject<TData> : InteractableObject<TData>
     where TData : RepairableInteractableSO
 {
+    [Header("Instance")]
+    [SerializeField] private bool _startsBroken;
+
     protected bool _isBroken;
 
     protected override void Awake() {
-        _isBroken = _data.StartsBroken; // must be set before the base call spawns visuals
+        _isBroken = _startsBroken; // before base.Awake spawns visuals
         base.Awake();
     }
 
@@ -18,14 +21,13 @@ public abstract class RepairableObject<TData> : InteractableObject<TData>
     protected bool EnsureRepaired(PlayerInteractor interactor) {
         if (!_isBroken) return true;
 
-        if (interactor.Wallet.TrySpendScrap(_data.RepairCostInScrap, _data.UseAudioClip)) {
+        if (interactor.Wallet.TrySpendScrap(_data.RepairAudioClip)) {
             _isBroken = false;
-            RefreshVisuals(); // swap damaged for repaired
-            Debug.Log($"Repaired {_data.DisplayName}.");
+            RefreshVisuals();
         }
         else {
-            Debug.Log($"Need {_data.RepairCostInScrap} scrap to repair {_data.DisplayName}.");
+            Debug.Log("Need 1 scrap to repair.");
         }
-        return false; // the repair used up this interaction
+        return false; // the repair used this interaction
     }
 }
