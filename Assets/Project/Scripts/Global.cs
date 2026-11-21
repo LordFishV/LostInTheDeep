@@ -47,3 +47,7 @@ public struct Override<T>
 public enum Stance {
     Idle, Walk, Sprint, Crouch
 }
+
+public enum HidingVisibility {
+    Visible, PartiallyVisible, Invisible
+}

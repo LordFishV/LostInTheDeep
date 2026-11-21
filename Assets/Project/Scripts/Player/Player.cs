@@ -5,6 +5,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private PlayerCharacter _character;
     [SerializeField] private PlayerInteractor _interactor;
+    [SerializeField] private PlayerHiding _hiding;
 
     private PlayerInputAction _inputActions;
     private PlayerInputAction.PlayerActions _input;
@@ -29,7 +30,9 @@ public class Player : MonoBehaviour
             Interact    = _input.Interact.WasPressedThisFrame()
         };
 
-        _character.CharacterUpdate(playerInput, false);
+        if (!_hiding.IsHidden)
+            _character.CharacterUpdate(playerInput, false);
+
         _interactor.UpdateInteractor(playerInput);
     }
 }

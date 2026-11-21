@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerInteractor : MonoBehaviour
@@ -10,14 +11,27 @@ public class PlayerInteractor : MonoBehaviour
     private readonly Collider[] _nearbyColliders = new Collider[16];
 
     public IChargeable Gear { get; private set; }
+    public PlayerHiding Hiding { get; private set; }
 
-    private void Awake() => Gear = GetComponentInParent<IChargeable>();
-
-    public void UpdateInteractor(PlayerInputs inputs) {
-        if (inputs.Interact)
-            CallInteraction();
+    private void Awake() {
+        Gear = GetComponentInParent<IChargeable>();
+        Hiding = GetComponentInParent<PlayerHiding>();
     }
 
+    /// <summary>Located in the main player loop updated every frame but only passes through when player is pressing the interact key</summary>
+    /// <param name="inputs">The player inputs to pass into this function</param>
+    public void UpdateInteractor(PlayerInputs inputs) {
+        if (!inputs.Interact) return;
+
+        if (Hiding.IsHidden) {
+            Hiding.Exit();
+            return;
+        }
+
+        CallInteraction();
+    }
+
+    /// <summary>When player can interact call this function</summary>
     private void CallInteraction() {
         Vector3 origin = transform.position;
         Vector3 facingDirection = transform.forward;
@@ -31,7 +45,8 @@ public class PlayerInteractor : MonoBehaviour
         float bestSquaredDistance = float.MaxValue;
 
         for (int i = 0; i < colliderCount; i++) {
-            Vector3 offsetToTarget = _nearbyColliders[i].transform.position - origin;
+            Collider nearbyCollider = _nearbyColliders[i];
+            Vector3 offsetToTarget = GetClosestPoint(nearbyCollider, origin) - origin;
             offsetToTarget.y = 0f; // top-down: ignore height
 
             float squaredDistance = offsetToTarget.sqrMagnitude;
@@ -54,6 +69,18 @@ public class PlayerInteractor : MonoBehaviour
             bestTarget.Interact(this);
         else
             Log("Nothing in range.");
+    }
+
+    /// <summary>Find the closest object with a interaction trigger collider to interact with</summary>
+    /// <param name="targetCollider"> The </param>
+    /// <param name="origin">The transform.position of the gameObject using this sctipt</param>
+    /// <returns>Gets the closes position to the player from the collider</returns>
+    private static Vector3 GetClosestPoint(Collider targetCollider, Vector3 origin) {
+        // ClosestPoint isn't supported on non-convex mesh colliders
+        if (targetCollider is MeshCollider meshCollider && !meshCollider.convex)
+            return targetCollider.bounds.center;
+
+        return targetCollider.ClosestPoint(origin);
     }
 
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
